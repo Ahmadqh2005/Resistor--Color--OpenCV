@@ -1,5 +1,5 @@
 # Resistor--Color--OpenCV
-A computer vision tool to detedt and crop resistor using adaptive morphological operation      
+A computer vision tool to detect and crop resistor using adaptive morphological operation      
 This project to determine the value of resistor based on the color band by using python and open cv library .
 The biggest problems was :
 1) When the picture of the resistor isn't horizontal, I write an algorthims to solve this problem and the algorithm was correct. 
