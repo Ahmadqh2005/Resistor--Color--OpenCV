@@ -160,5 +160,5 @@ if len (contor) >0 :
 #--------------------croping a image ---------------------
 crop_image = cv.getRectSubPix(rotating_image, (int(w_rect  ), int(h_rect*1.3 )), center )
 
-find_color_band(image)
+find_color_band(crop_image)
 
