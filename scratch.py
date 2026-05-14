@@ -76,7 +76,7 @@ def find_color_band(image):
                 
     
     
-    rearrange_bands= sorted(all_bands, key=lambda all_bands: all_bands[2][0], reverse=False)  #final step rearrange the bands to ready to extract values 
+    rearrange_bands= sorted(all_bands, key=lambda b: b[2][0], reverse=False)  #final step rearrange the bands to ready to extract values 
     print(rearrange_bands)
     cv.imshow("the final result", image)
     
@@ -114,41 +114,27 @@ image= cv.imread(r"C:\Users\hp\Downloads\python\git_hup_resistor.jpg")
 
 imag_gray= cv.cvtColor(image, cv.COLOR_BGR2GRAY )
 
-# filtration 
+#--------------------filtering---------------------
+
 filter= cv.bilateralFilter(imag_gray, 9, sigmaColor=10, sigmaSpace=10 )
-cv.imshow("filter", filter)
-
 ret1, th1 =cv.threshold(filter, None, 255, cv.THRESH_BINARY_INV + cv.THRESH_OTSU) 
-# cv.imshow("th1", th1)
-
 
 #--------------------filling   ---------------------
 
 k_fill = Best_k_filling(th1)
 filling_image = cv.morphologyEx(th1, cv.MORPH_CLOSE, k_fill)
-# cv.imshow("filling_image", filling_image)
-
-
 
 #--------------------distance transform  ---------------------
 Dtransform=cv.distanceTransform(filling_image, distanceType=cv.DIST_L2, maskSize=5)
-
 minValue, maxValue, minLoc, maxLoc = cv.minMaxLoc(Dtransform)
 
+#--------------------distance threshold  ---------------------
 
-N_image= cv.normalize(Dtransform, None, 0, 255, cv.NORM_MINMAX) #ignor  for the dista_th
-D_image= np.uint8(N_image)
-# cv.imshow("D_image", D_image)
-
-# distance threshold
-ret2, th_distance =cv.threshold(Dtransform, maxValue*0.35, 255, cv.THRESH_BINARY ) # it maybe deleted 
-
-N_image= cv.normalize(th_distance, None, 0, 255, cv.NORM_MINMAX) #ignor  for the dista_th
+ret2, th_distance =cv.threshold(Dtransform, maxValue*0.35, 255, cv.THRESH_BINARY )  
+N_image= cv.normalize(th_distance, None, 0, 255, cv.NORM_MINMAX) 
 th_distance_image= np.uint8(N_image)
-# cv.imshow("th_distance_image",th_distance_image )
 
-
-# Find a contor 
+#--------------------distance threshold  ---------------------
 contor, hierarchy =cv.findContours(th_distance_image, cv.RETR_EXTERNAL, cv.CHAIN_APPROX_SIMPLE)
 
 if len (contor) >0 :
@@ -159,10 +145,7 @@ if len (contor) >0 :
     center, (w_rect, h_rect), angle =rectangle
 
 
-
-
-#------------------ check if the image is horizantal-----------------------------    
-    if w_rect < h_rect :
+    if w_rect < h_rect : #check if the image is horizantal
         angle= angle+90
         w_rect, h_rect= h_rect, w_rect
 
@@ -177,13 +160,5 @@ if len (contor) >0 :
 #--------------------croping a image ---------------------
 crop_image = cv.getRectSubPix(rotating_image, (int(w_rect  ), int(h_rect*1.3 )), center )
 
-cv.imshow("crop_image",crop_image)
+find_color_band(image)
 
-
-find_color_band(crop_image)
-
-
-
-
-cv.waitKey(0)
-cv.destroyAllWindows()
